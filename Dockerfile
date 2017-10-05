@@ -7,7 +7,16 @@ RUN apt-get update && \
     add-apt-repository ppa:webupd8team/java
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y curl wget apt-transport-https
+    apt-get install -y curl wget apt-transport-https build-essential git
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+RUN add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+# Xvfb
+RUN apt-get install -y xvfb supervisor
+ENV DISPLAY :99.0
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+VOLUME /var/log/supervisord
 
 # Java
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
@@ -22,12 +31,6 @@ RUN wget http://mirrors.viethosting.vn/apache/maven/maven-3/3.3.9/binaries/apach
 RUN ln -s /usr/local/apache-maven-3.3.9 /usr/local/maven
 ENV M2_HOME /usr/local/maven
 ENV PATH=${M2_HOME}/bin:${PATH}
-
-# Xvfb
-RUN apt-get install -y xvfb supervisor
-ENV DISPLAY :99.0
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-VOLUME /var/log/supervisord
 
 # Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
