@@ -54,7 +54,6 @@ RUN apt-get autoremove --purge
 # Jenkins user
 RUN useradd -ms /bin/bash jenkins &&\
     echo "jenkins:jenkins" | chpasswd
-RUN usermod -aG docker jenkins
 ENV WORKSPACE /home/jenkins
 USER jenkins
 WORKDIR ${WORKSPACE}
