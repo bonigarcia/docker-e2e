@@ -4,7 +4,7 @@ USER root
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y curl wget apt-transport-https
+    apt-get install -y curl wget apt-transport-https add-apt-repository
 
 # Maven
 RUN wget http://mirrors.viethosting.vn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz && \
