@@ -30,6 +30,8 @@ RUN apt-get -y install git
 
 USER jenkins
 
+ENV WORKSPACE /home/jenkins
+
 WORKDIR ${WORKSPACE}
 
 ENTRYPOINT ["/bin/bash"]
