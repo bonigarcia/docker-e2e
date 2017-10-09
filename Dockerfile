@@ -32,4 +32,5 @@ USER jenkins
 
 WORKDIR ${WORKSPACE}
 
-#ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash"]
+
