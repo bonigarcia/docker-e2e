@@ -1,5 +1,11 @@
 FROM selenium/standalone-chrome:latest
 
+USER root
+
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y curl wget apt-transport-https
+
 # Maven
 RUN wget http://mirrors.viethosting.vn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz && \
     tar -xf apache-maven-3.3.9-bin.tar.gz  -C /usr/local
@@ -27,5 +33,4 @@ USER jenkins
 
 WORKDIR ${WORKSPACE}
 
-# launch container
 #ENTRYPOINT ["/bin/bash"]
