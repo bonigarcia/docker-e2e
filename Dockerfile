@@ -28,6 +28,12 @@ RUN apt-get update && \
 RUN apt-get -y install git
 
 
+# non root user
+RUN useradd -ms /bin/bash jenkins &&\
+    echo "jenkins:jenkins" | chpasswd
+
+RUN usermod -aG docker jenkins
+
 USER jenkins
 
 ENV WORKSPACE /home/jenkins
