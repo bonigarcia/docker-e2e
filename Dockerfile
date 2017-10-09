@@ -4,7 +4,7 @@ USER root
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y curl wget apt-transport-https add-apt-repository
+    apt-get install -y curl wget apt-transport-https software-properties-common
 
 # Maven
 RUN wget http://mirrors.viethosting.vn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz && \
@@ -16,7 +16,6 @@ ENV M2_HOME /usr/local/maven
 ENV PATH=${M2_HOME}/bin:${PATH}
 
 # Docker
-
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 
 RUN add-apt-repository \
