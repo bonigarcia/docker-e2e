@@ -60,4 +60,4 @@ ENV WORKSPACE /home/jenkins
 USER jenkins
 WORKDIR ${WORKSPACE}
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
