@@ -39,6 +39,8 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
   && apt-get -qqy install \
     google-chrome-stable \
   && rm /etc/apt/sources.list.d/google-chrome.list
+COPY wrap_chrome_binary /opt/bin/wrap_chrome_binary
+RUN /opt/bin/wrap_chrome_binary
 
 # Firefox
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AF316E81A155146718A6FBD7A6DCF7707EBC211F  \
