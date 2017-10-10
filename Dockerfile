@@ -1,44 +1,70 @@
-FROM selenium/standalone-chrome:latest
+##########################
+#
+# Docker file to  extend elastest/docker-siblings:latest with
+#     - Chrome
+#     - Firefox
+#     - Xvfb
+#
+########################
 
+FROM elastest/ci-docker-siblings:latest
+
+# user for setting the environment
 USER root
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y curl wget apt-transport-https software-properties-common
+# Xvfb
+RUN apt-get install -y xvfb
 
-# Maven
-RUN wget http://mirrors.viethosting.vn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz && \
-    tar -xf apache-maven-3.3.9-bin.tar.gz  -C /usr/local
+RUN echo '#!/bin/bash\n\
+\n\
+XVFB=/usr/bin/Xvfb\n\
+XVFBARGS="$DISPLAY -ac -screen 0 1024x768x16"\n\
+PIDFILE=${HOME}/xvfb_${DISPLAY:1}.pid\n\
+case "$1" in\n\
+  start)\n\
+    echo -n "Starting virtual X frame buffer: Xvfb"\n\
+    /sbin/start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile --background --exec $XVFB -- $XVFBARGS\n\
+    echo "."\n\
+    ;;\n\
+  stop)\n\
+    echo -n "Stopping virtual X frame buffer: Xvfb"\n\
+    /sbin/start-stop-daemon --stop --quiet --pidfile $PIDFILE\n\
+    echo "."\n\
+    ;;\n\
+  restart)\n\
+    $0 stop\n\
+    $0 start\n\
+    ;;\n\
+  *)\n\
+  echo "Usage: /etc/init.d/xvfb {start|stop|restart}"\n\
+  exit 1\n\
+esac\n\
+exit 0\n'\
+>> /etc/init.d/xvfb
 
-RUN ln -s /usr/local/apache-maven-3.3.9 /usr/local/maven
+ENV DISPLAY :99.0
+RUN chmod +x /etc/init.d/xvfb
+RUN /etc/init.d/xvfb start
 
-ENV M2_HOME /usr/local/maven
-ENV PATH=${M2_HOME}/bin:${PATH}
+# Google Chrome
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+  && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+  && apt-get update -qqy \
+  && apt-get -qqy install \
+    google-chrome-stable \
+  && rm /etc/apt/sources.list.d/google-chrome.list
 
-# Docker
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-
-RUN add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
-RUN apt-get update && \
-    apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
-
-# Git
-RUN apt-get -y install git
-
-
-# non root user
-RUN useradd -ms /bin/bash jenkins &&\
-    echo "jenkins:jenkins" | chpasswd
-
-RUN usermod -aG docker jenkins
+# Firefox
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AF316E81A155146718A6FBD7A6DCF7707EBC211F  \
+  && echo "deb http://ppa.launchpad.net/ubuntu-mozilla-security/ppa/ubuntu trusty main" >> /etc/apt/sources.list.d/firefox.list \
+  && apt-get update -qqy \
+  && apt-get -qqy --no-install-recommends install \
+    firefox \
+  && rm -rf /etc/apt/sources.list.d/firefox.list
 
 USER jenkins
 
-ENV WORKSPACE /home/jenkins
-
 WORKDIR ${WORKSPACE}
 
+# launch container
 ENTRYPOINT ["/bin/bash"]
-
