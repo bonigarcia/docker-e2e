@@ -34,7 +34,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AF316E81A155146718A
   && rm -rf /etc/apt/sources.list.d/firefox.list
 
 # Cleanup
-RUN apt-get autoremove --purge -y $BUILD_PACKAGES $(apt-mark showauto) && rm -rf /var/lib/apt/lists/*
+RUN apt-get autoremove --purge
 
 # Jenkins user
 USER jenkins
