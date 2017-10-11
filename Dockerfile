@@ -9,8 +9,6 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y curl wget apt-transport-https build-essential git
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-RUN add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
 # Xvfb
 RUN apt-get install -y xvfb supervisor
@@ -51,6 +49,8 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AF316E81A155146718A
   && rm -rf /etc/apt/sources.list.d/firefox.list
 
 # Docker siblings
+RUN add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 RUN apt-get update && \
     apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
 RUN echo "export DOCKER_HOST='unix:///var/run/docker.sock'" >> /root/.bashrc \
