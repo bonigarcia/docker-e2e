@@ -50,17 +50,21 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AF316E81A155146718A
     firefox \
   && rm -rf /etc/apt/sources.list.d/firefox.list
 
-# Cleanup
-RUN apt-get autoremove --purge
+# Docker siblings
+RUN apt-get update && \
+    apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
 RUN echo "export DOCKER_HOST='unix:///var/run/docker.sock'" >> /root/.bashrc \
  && echo "export DEBIAN_FRONTEND=noninteractive" >> /root/.bashrc
 
+# Cleanup
+RUN apt-get autoremove --purge
 
 # Jenkins user
 RUN useradd -ms /bin/bash jenkins &&\
     echo "jenkins:jenkins" | chpasswd
+RUN usermod -aG docker jenkins
 ENV WORKSPACE /home/jenkins
 USER jenkins
 WORKDIR ${WORKSPACE}
 
-ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
