@@ -52,6 +52,9 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AF316E81A155146718A
 
 # Cleanup
 RUN apt-get autoremove --purge
+RUN echo "export DOCKER_HOST='unix:///var/run/docker.sock'" >> /root/.bashrc \
+ && echo "export DEBIAN_FRONTEND=noninteractive" >> /root/.bashrc
+
 
 # Jenkins user
 RUN useradd -ms /bin/bash jenkins &&\
